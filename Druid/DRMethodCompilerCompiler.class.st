@@ -13,6 +13,11 @@ DRMethodCompilerCompiler >> argName: index forMethod: method [
 	^ method argumentNames at: index
 ]
 
+{ #category : #'generation-IR' }
+DRMethodCompilerCompiler >> drNode: method [
+	^DRMethod methodNode: (self methodAST: method)
+]
+
 { #category : #'instance creation' }
 DRMethodCompilerCompiler >> newIRGenerator [
 

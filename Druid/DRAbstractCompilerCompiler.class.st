@@ -97,11 +97,11 @@ DRAbstractCompilerCompiler >> generateDruidIRFor: method [
 	| cfg receiver arguments |
 	self configureIRBuilder: irGenerator forMethod: method.
 
-	arguments := method argumentNames collect: [ :_ | irGenerator pop ].
+	arguments := (1 to: (self numberOfArgumentsForMethod: method)) collect: [ :_ | irGenerator pop ].
 	receiver := DRInterpreterValue value: interpreter.
 
 	irGenerator
-		interpretCode: (DRMethod methodNode: method ast)
+		interpretCode: (self drNode: method)
 		receiver: receiver
 		arguments: arguments.
 
@@ -169,6 +169,11 @@ DRAbstractCompilerCompiler >> irGenerator [
 DRAbstractCompilerCompiler >> irGenerator: aDRIRGenerator [
 
 	irGenerator := aDRIRGenerator
+]
+
+{ #category : #accessing }
+DRAbstractCompilerCompiler >> methodAST: method [
+	^method ast
 ]
 
 { #category : #'generation-IR' }

@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #activation }
+DRCode >> argumentNames [
+	^self codeNode argumentNames
+]
+
+{ #category : #activation }
 DRCode >> basicNewFrame [
 
 	^ self subclassResponsibility
@@ -45,7 +50,7 @@ DRCode >> pushFrame: frame In: interpreter receiver: aReceiver [
 		entryBasicBlock: newMethodEntry;
 		exitBasicBlock: interpreter basicNewBasicBlock.
 
-	self codeNode temporaryNames , self codeNode argumentNames do: [ :e | frame defineVariableNamed: e ].
+	self temporaryNames , self argumentNames do: [ :e | frame defineVariableNamed: e ].
 	frame returnValue: (self defaultReturnValue: aReceiver).
 	interpreter pushFrame: frame.
 	^ frame
@@ -55,4 +60,9 @@ DRCode >> pushFrame: frame In: interpreter receiver: aReceiver [
 DRCode >> pushFrameIn: interpreter receiver: aReceiver [
 
 	^ self pushFrame: self basicNewFrame In: interpreter receiver: aReceiver
+]
+
+{ #category : #activation }
+DRCode >> temporaryNames [
+	^self codeNode temporaryNames
 ]

@@ -40,6 +40,11 @@ DRMethod >> executeOn: interpreter [
 	self codeNode acceptVisitor: interpreter
 ]
 
+{ #category : #'as yet unclassified' }
+DRMethod >> localNames [
+	^self codeNode temporaryNames , self codeNode argumentNames
+]
+
 { #category : #accessing }
 DRMethod >> methodNode [
 

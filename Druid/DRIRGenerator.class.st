@@ -687,8 +687,8 @@ DRIRGenerator >> interpretCode: aDRCode receiver: aReceiver arguments: arguments
 
 	"Iterate based on the defined arguments.
 	In ifNotNil: arguments are optional"
-	1 to: aDRCode codeNode argumentNames size do: [ :i | | name |
-		name := aDRCode codeNode argumentNames at: i.
+	1 to: aDRCode argumentNames size do: [ :i | | name |
+		name := aDRCode argumentNames at: i.
 		self topFrame writeTemporaryNamed: name withValue: (arguments at: i).
 	].
 
