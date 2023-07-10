@@ -1,7 +1,7 @@
 Class {
 	#name : #DRFASTJavaMethod,
 	#superclass : #DRMethod,
-	#category : #'Druid-FAST'
+	#category : #'Druid-FAST-Java'
 }
 
 { #category : #accessing }

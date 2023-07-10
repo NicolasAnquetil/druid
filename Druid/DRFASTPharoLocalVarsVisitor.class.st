@@ -1,11 +1,11 @@
 Class {
-	#name : #DRFASTJavaLocalVarsVisitor,
-	#superclass : #AnObsoleteFASTJavaLocalResolverVisitor,
-	#category : #'Druid-FAST-Java'
+	#name : #DRFASTPharoLocalVarsVisitor,
+	#superclass : #Object,
+	#category : #'Druid-FAST-Pharo'
 }
 
 { #category : #visiting }
-DRFASTJavaLocalVarsVisitor >> visitFASTJavaMethodEntity: aFASTJavaMethodEntity [
+DRFASTPharoLocalVarsVisitor >> visitFASTPharoMethodEntity: aFASTJavaMethodEntity [
 	"cannot trust in visit children because order of parameters and statementBlock is not guaranteed"
 
 	"aFASTJavaMethodEntity modifiers"

@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'fastJavaVisitor'
 	],
-	#category : #'Druid-FAST'
+	#category : #'Druid-FAST-Java'
 }
 
 { #category : #accessing }

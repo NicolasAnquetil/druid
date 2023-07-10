@@ -1,10 +1,10 @@
 Class {
 	#name : #DRFASTJavaGeneratorVisitor,
-	#superclass : #FASTJavaVisitor,
+	#superclass : #AnObsoleteFASTJavaVisitor,
 	#instVars : [
 		'druidGenerator'
 	],
-	#category : #'Druid-FAST'
+	#category : #'Druid-FAST-Java'
 }
 
 { #category : #accessing }
