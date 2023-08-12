@@ -57,3 +57,37 @@ DRFASTPharoIRGeneratorTest >> testGetterMethod [
 	self deny: block isExitBlock.
 
 ]
+
+{ #category : #tests }
+DRFASTPharoIRGeneratorTest >> testSetterMethod [
+	| ir block |
+	ir := self generateIRFor: (DRFASTJavaIRGenerator >> #fastJavaVisitor:).
+
+	self assert: ir blocks size equals: 2.
+	self flag: 'Need FAST-Resolver to recognize Argument in DRFASTPharoVisistor >> visitFASTVariableExpression:'.
+
+	block := self block: ir at: 1.
+	self assert: block class equals: DRBasicBlock.
+	self assert: block instructions size equals: 2.
+	self assert: block instructions first class equals: DRLoadArgument.
+	self assert: block endInstruction class equals: DRJump.
+	self assert: block endInstruction target equals: (self block: ir at: 2).
+	self deny: block isExitBlock.
+
+	block := self block: ir at: 2.
+	self assert: block class equals: DRBasicBlock.
+	self assert: block instructions size equals: 2.
+	self assert: block instructions first class equals: DRFrameReturn.
+	self assert: block endInstruction class equals: DRJump.
+	self assert: block endInstruction target equals: (self block: ir at: 3).
+	self deny: block isExitBlock.
+
+	block := self block: ir at: 3.
+	self assert: block class equals: DRBasicBlock.
+	self assert: block instructions size equals: 3.
+	self assert: block instructions first class equals: DRPhiFunction.
+	self assert: block instructions second class equals: DRFrameReturn.
+	self assert: block endInstruction class equals: DRReturn.
+	self deny: block isExitBlock.
+
+]
