@@ -13,15 +13,13 @@ DRFASTPharoMethod >> argumentNames [
 DRFASTPharoMethod >> executeOn: aDRFASTPharoIRGenerator [
 
 	| fastPharoVisitor |
-	fastPharoVisitor := DRFASTPharoGeneratorVisitor new.
+	fastPharoVisitor := DRFASTPharoVisitor new.
 	fastPharoVisitor druidGenerator: aDRFASTPharoIRGenerator.
-	aDRFASTPharoIRGenerator fastPharoVisitor: fastPharoVisitor.
+	aDRFASTPharoIRGenerator fastVisitor: fastPharoVisitor.
 	self codeNode accept: fastPharoVisitor
 ]
 
 { #category : #accessing }
 DRFASTPharoMethod >> temporaryNames [
-	^(self codeNode accept: DRFASTJavaLocalVarsVisitor new)
-		reject: [:e | e class = FASTJavaNonLocalDeclaration ]
-		thenCollect: [ :e | e variable name ].
+	^self codeNode localVariables collect: #name
 ]

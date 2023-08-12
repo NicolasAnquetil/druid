@@ -2,49 +2,36 @@ Class {
 	#name : #DRFASTPharoIRGenerator,
 	#superclass : #DRMethodIRGenerator,
 	#instVars : [
-		'fastPharoVisitor'
+		'fastVisitor'
 	],
 	#category : #'Druid-FAST-Pharo'
 }
 
 { #category : #accessing }
-DRFASTPharoIRGenerator >> fastPharoVisitor [
+DRFASTPharoIRGenerator >> fastVisitor [
 
-	^ fastPharoVisitor
+	^ fastVisitor
 ]
 
 { #category : #accessing }
-DRFASTPharoIRGenerator >> fastPharoVisitor: anObject [
+DRFASTPharoIRGenerator >> fastVisitor: anObject [
 
-	fastPharoVisitor := anObject
+	fastVisitor := anObject
 ]
 
 { #category : #'frame-access' }
 DRFASTPharoIRGenerator >> popOperand [
 	self topFrame operandStack
-		ifEmpty: [ Transcript show: 'DRFASTPharoIRGenerator popOperand on empty stack' ]
-		ifNotEmpty: [ super popOperand ]
+		ifEmpty: [ 'DRFASTPharoIRGenerator popOperand on empty stack' traceCr. ^nil ]
+		ifNotEmpty: [ ^super popOperand ]
 ]
 
 { #category : #visiting }
-DRFASTPharoIRGenerator >> visitPharoAssignmentExpression: aFASTPharoAssignmentExpressionNode [
- 1halt.
-	variableSpecialCases at: aFASTPharoAssignmentExpressionNode variable name ifPresent: [ :mapping | 
-		| rawMapping |
-		rawMapping := mapping allButLast: 'With:' size.
-		^ self perform: (rawMapping , 'AssignmentWith:') asSymbol withArguments: { aFASTPharoAssignmentExpressionNode } ].
-
-	self interpretAssignmentNode: aFASTPharoAssignmentExpressionNode
-	
-]
-
-{ #category : #visiting }
-DRFASTPharoIRGenerator >> visitPharoReturnStatement: aFASTPharoReturnStatementNode [
-	"adapted from DRIRGenerator>>#visitReturnNode:"
+DRFASTPharoIRGenerator >> visitReturnNode: aRBReturnNode [
 
 	| value homeFrame fork |
 
-	value := self visitOperand: aFASTPharoReturnStatementNode expression.
+	value := self visitOperand: aRBReturnNode expression.
 	
 	"Create a fork, push value operand and create a FrameReturn to keep DeferredReturnState ready to merge"
 	fork := executionState copy.
@@ -58,4 +45,9 @@ DRFASTPharoIRGenerator >> visitPharoReturnStatement: aFASTPharoReturnStatementNo
 
 	"The return is a statement with no value"
 	self pushOperand: DRNullValue new
+]
+
+{ #category : #visiting }
+DRFASTPharoIRGenerator >> visitVariableNode: aFASTVariableExpression [
+	^self pushOperand: aFASTVariableExpression asDRValue
 ]
