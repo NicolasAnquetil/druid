@@ -19,11 +19,53 @@ DRFASTPharoIRGenerator >> fastVisitor: anObject [
 	fastVisitor := anObject
 ]
 
+{ #category : #interpreting }
+DRFASTPharoIRGenerator >> interpretAssignmentNode: aRBAssignmentNode [
+
+	| value |
+	value := self visitOperand: aRBAssignmentNode expression.
+
+	((aRBAssignmentNode variable famixVariable isAttribute) and: 
+	[ aRBAssignmentNode variable famixVariable isClassSide not ]) ifTrue: [ 
+		^ self
+			  addInstructionWithNoResultFrom: aRBAssignmentNode
+			  instructionKind: DRStoreInstanceVariable
+			  operands: { 
+					  self receiver.
+					  aRBAssignmentNode variable famixVariable asDRValue.
+					  value } ].
+
+	(aRBAssignmentNode variable famixVariable isLocalVariable) ifTrue: [ 
+		self topFrame
+				  temporaryAt: aRBAssignmentNode variable name
+				  put: value
+				  withState: executionState.
+		^ self
+			  addInstructionWithNoResultFrom: aRBAssignmentNode
+			  instructionKind: DRStoreTemporaryVariable
+			  operands: { 
+					  aRBAssignmentNode variable name asDRValue. "Fix temporary names collisions"
+					  value } ].
+
+	self unexplored
+]
+
 { #category : #'frame-access' }
 DRFASTPharoIRGenerator >> popOperand [
 	self topFrame operandStack
 		ifEmpty: [ 'DRFASTPharoIRGenerator popOperand on empty stack' traceCr. ^nil ]
 		ifNotEmpty: [ ^super popOperand ]
+]
+
+{ #category : #visiting }
+DRFASTPharoIRGenerator >> visitInstanceVariableNode: aFASTPharoVariableNode [
+
+	self
+		addInstructionFrom: aFASTPharoVariableNode
+		instructionKind: DRLoadInstanceVariable
+		operands: { 
+				self topFrame receiver.
+				aFASTPharoVariableNode famixVariable asDRValue }
 ]
 
 { #category : #visiting }
@@ -49,5 +91,7 @@ DRFASTPharoIRGenerator >> visitReturnNode: aRBReturnNode [
 
 { #category : #visiting }
 DRFASTPharoIRGenerator >> visitVariableNode: aFASTVariableExpression [
+	"a generic visit method for unspecified variables"
+
 	^self pushOperand: aFASTVariableExpression asDRValue
 ]

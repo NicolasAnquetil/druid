@@ -48,23 +48,16 @@ DRFASTPharoVisitor >> visitFASTTStatementBlock: aFASTTStatementBlockNode [
 
 { #category : #visiting }
 DRFASTPharoVisitor >> visitFASTVariableExpression: aFASTVariableExpression [
-	"possible actions
-	- visitArgumentVariableNode:
-	- visitClassVariableNode:
-	- visitGlobalVariableNode:
-	- visitInstanceVariableNode:
-	- visitLiteralVariableNode:
-	- visitLocalVariableNode:
-	- visitSelfNode:
-	- visitSuperNode:
-	- visitTemporaryVariableNode:
-	- visitThisContextNode:
-	- visitVariableNode:
-	
-	For now will always assume a 'generic variable'
-	"
 
-	^ druidGenerator visitVariableNode: aFASTVariableExpression
+	^aFASTVariableExpression famixVariable
+		ifNil: [ druidGenerator visitVariableNode: aFASTVariableExpression ]
+		ifNotNil: [ :famixVariable | famixVariable druid: druidGenerator visit: aFASTVariableExpression ]
+]
+
+{ #category : #visiting }
+DRFASTPharoVisitor >> visitPharoAssignmentExpression: aPharoAssignmentExpression [
+
+	^druidGenerator visitAssignmentNode: aPharoAssignmentExpression 
 ]
 
 { #category : #visiting }
