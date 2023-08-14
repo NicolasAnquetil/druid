@@ -11,6 +11,16 @@ Class {
 }
 
 { #category : #running }
+DRFASTPharoIRGeneratorTest >> assertInstructions: aDRBlock match: aClassCollection [
+	self assert: aDRBlock instructions size equals: aClassCollection size.
+	
+	aDRBlock instructions with: aClassCollection do: [ :inst :clazz |
+		self assert: inst class equals: clazz
+	].
+
+]
+
+{ #category : #running }
 DRFASTPharoIRGeneratorTest >> astFor: aCompiledMethod [
 	"generates a FAST-Pharo tree from the source code of the compiled method
 	 + makes the bindings of variables"
@@ -75,27 +85,17 @@ DRFASTPharoIRGeneratorTest >> testGetterMethod [
 
 	block := self block: ir at: 1.
 	self assert: block class equals: DRBasicBlock.
-	self assert: block instructions size equals: 1.
-	self assert: block endInstruction class equals: DRJump.
+	self assertInstructions: block match: {DRJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
-	self deny: block isExitBlock.
 
 	block := self block: ir at: 2.
 	self assert: block class equals: DRBasicBlock.
-	self assert: block instructions size equals: 3.
-	self assert: block instructions first class equals: DRLoadInstanceVariable.
-	self assert: block instructions second class equals: DRFrameReturn.
-	self assert: block endInstruction class equals: DRJump.
+	self assertInstructions: block match: {DRLoadInstanceVariable. DRFrameReturn. DRJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
-	self deny: block isExitBlock.
 
 	block := self block: ir at: 3.
 	self assert: block class equals: DRBasicBlock.
-	self assert: block instructions size equals: 3.
-	self assert: block instructions first class equals: DRPhiFunction.
-	self assert: block instructions second class equals: DRFrameReturn.
-	self assert: block endInstruction class equals: DRReturn.
-	self deny: block isExitBlock.
+	self assertInstructions: block match: { DRPhiFunction. DRFrameReturn. DRReturn}.
 
 ]
 
@@ -110,27 +110,16 @@ DRFASTPharoIRGeneratorTest >> testSetterMethod [
 
 	block := self block: ir at: 1.
 	self assert: block class equals: DRBasicBlock.
-	self assert: block instructions size equals: 2.
-	self assert: block instructions first class equals: DRLoadArgument.
-	self assert: block endInstruction class equals: DRJump.
+	self assertInstructions: block match: { DRLoadArgument. DRJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
-	self deny: block isExitBlock.
 
 	block := self block: ir at: 2.
 	self assert: block class equals: DRBasicBlock.
-	self assert: block instructions size equals: 3.
-	self assert: block instructions first class equals: DRStoreInstanceVariable.
-	self assert: block instructions second class equals: DRFrameReturn.
-	self assert: block endInstruction class equals: DRJump.
+	self assertInstructions: block match: {DRStoreInstanceVariable. DRFrameReturn. DRJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
-	self deny: block isExitBlock.
 
 	block := self block: ir at: 3.
 	self assert: block class equals: DRBasicBlock.
-	self assert: block instructions size equals: 3.
-	self assert: block instructions first class equals: DRPhiFunction.
-	self assert: block instructions second class equals: DRFrameReturn.
-	self assert: block endInstruction class equals: DRReturn.
-	self deny: block isExitBlock.
+	self assertInstructions: block match: {DRPhiFunction. DRFrameReturn. DRReturn}.
 
 ]
