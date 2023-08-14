@@ -21,13 +21,13 @@ DRFASTPharoIRGeneratorTest >> assertInstructions: aDRBlock match: aClassCollecti
 ]
 
 { #category : #running }
-DRFASTPharoIRGeneratorTest >> astFor: aCompiledMethod [
+DRFASTPharoIRGeneratorTest >> astFor: sourceCode [
 	"generates a FAST-Pharo tree from the source code of the compiled method
 	 + makes the bindings of variables"
 	| ast binder |
 
 	ast := FASTSmalltalkImporterVisitor new
-		runWithSource: aCompiledMethod sourceCode.
+		runWithSource: sourceCode.
 	binder := DRFASTPharoBinderForTest new
 		on: ast ;
 		yourself.
@@ -78,8 +78,10 @@ DRFASTPharoIRGeneratorTest >> initialize [
 { #category : #tests }
 DRFASTPharoIRGeneratorTest >> testGetterMethod [
 	| ir block |
-	self bind: 'fastJavaVisitor' to: FamixStAttribute.
-	ir := self generateIRFor: (DRFASTJavaIRGenerator >> #fastJavaVisitor).
+	self bind: 'anInstVar' to: FamixStAttribute.
+	ir := self generateIRFor:
+'anInstVarGetter
+	^anInstVar'.
 
 	self assert: ir blocks size equals: 3.
 
@@ -102,9 +104,12 @@ DRFASTPharoIRGeneratorTest >> testGetterMethod [
 { #category : #tests }
 DRFASTPharoIRGeneratorTest >> testSetterMethod [
 	| ir block |
-	self bind: 'fastJavaVisitor' to: FamixStAttribute.
+	self bind: 'anInstVar' to: FamixStAttribute.
 	self bind: 'anObject' to: FamixStParameter.
-	ir := self generateIRFor: (DRFASTJavaIRGenerator >> #fastJavaVisitor:).
+	ir := self generateIRFor:
+'anInstVarSetter: anObject
+	anInstVar := anObject'.
+
 
 	self assert: ir blocks size equals: 3.
 
