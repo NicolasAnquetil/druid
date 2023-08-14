@@ -10,8 +10,16 @@ Class {
 	#category : #'Druid-Tests-FAST-Pharo'
 }
 
+{ #category : #tests }
+DRFASTPharoIRGeneratorTest >> aSelector [
+	bindings := self
+]
+
 { #category : #running }
-DRFASTPharoIRGeneratorTest >> assertInstructions: aDRBlock match: aClassCollection [
+DRFASTPharoIRGeneratorTest >> assertBlockInstructions: aDRBlock contains: aClassCollection [
+	
+	self assert: aDRBlock class equals: DRBasicBlock.
+
 	self assert: aDRBlock instructions size equals: aClassCollection size.
 	
 	aDRBlock instructions with: aClassCollection do: [ :inst :clazz |
@@ -76,7 +84,7 @@ DRFASTPharoIRGeneratorTest >> initialize [
 ]
 
 { #category : #tests }
-DRFASTPharoIRGeneratorTest >> testGetterMethod [
+DRFASTPharoIRGeneratorTest >> testInstanceVarGetter [
 	| ir block |
 	self bind: 'anInstVar' to: FamixStAttribute.
 	ir := self generateIRFor:
@@ -86,23 +94,46 @@ DRFASTPharoIRGeneratorTest >> testGetterMethod [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assert: block class equals: DRBasicBlock.
-	self assertInstructions: block match: {DRJump}.
+	self assertBlockInstructions: block contains: {DRJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
-	self assert: block class equals: DRBasicBlock.
-	self assertInstructions: block match: {DRLoadInstanceVariable. DRFrameReturn. DRJump}.
+	self assertBlockInstructions: block contains: {DRLoadInstanceVariable. DRFrameReturn. DRJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assert: block class equals: DRBasicBlock.
-	self assertInstructions: block match: { DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: { DRPhiFunction. DRFrameReturn. DRReturn}.
 
 ]
 
 { #category : #tests }
-DRFASTPharoIRGeneratorTest >> testSetterMethod [
+DRFASTPharoIRGeneratorTest >> testMessageSend [
+	| ir block |
+	self bind: 'anInstVar' to: FamixStAttribute.
+	ir := self generateIRFor:
+'aSelector
+	anInstVar otherSelector'.
+
+
+	self assert: ir blocks size equals: 3.
+
+	block := self block: ir at: 1.
+	self assertBlockInstructions: block contains: {DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 2).
+
+	block := self block: ir at: 2.
+	self
+		assertBlockInstructions: block
+		contains: {DRLoadInstanceVariable . DRMessageSend . DRFrameReturn . DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 3).
+
+	block := self block: ir at: 3.
+	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+
+]
+
+{ #category : #tests }
+DRFASTPharoIRGeneratorTest >> testParameterSetter [
 	| ir block |
 	self bind: 'anInstVar' to: FamixStAttribute.
 	self bind: 'anObject' to: FamixStParameter.
@@ -114,17 +145,87 @@ DRFASTPharoIRGeneratorTest >> testSetterMethod [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assert: block class equals: DRBasicBlock.
-	self assertInstructions: block match: { DRLoadArgument. DRJump}.
+	self assertBlockInstructions: block contains: { DRLoadArgument. DRJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
-	self assert: block class equals: DRBasicBlock.
-	self assertInstructions: block match: {DRStoreInstanceVariable. DRFrameReturn. DRJump}.
+	self assertBlockInstructions: block contains: {DRStoreInstanceVariable. DRFrameReturn. DRJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assert: block class equals: DRBasicBlock.
-	self assertInstructions: block match: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+
+]
+
+{ #category : #tests }
+DRFASTPharoIRGeneratorTest >> testSelfAccess [
+	| ir block |
+	ir := self generateIRFor:
+'aSelector
+	self otherSelector'.
+
+	self assert: ir blocks size equals: 3.
+
+	block := self block: ir at: 1.
+	self assertBlockInstructions: block contains: {DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 2).
+
+	block := self block: ir at: 2.
+	self
+		assertBlockInstructions: block
+		contains: {DRMessageSend . DRFrameReturn . DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 3).
+
+	block := self block: ir at: 3.
+	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+
+]
+
+{ #category : #tests }
+DRFASTPharoIRGeneratorTest >> testSelfAssigned [
+	| ir block |
+	self bind: 'anInstVar' to: FamixStAttribute.
+	ir := self generateIRFor:
+'aSelector
+	anInstVar := self'.
+
+	self assert: ir blocks size equals: 3.
+
+	block := self block: ir at: 1.
+	self assertBlockInstructions: block contains: {DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 2).
+
+	block := self block: ir at: 2.
+	self
+		assertBlockInstructions: block
+		contains: {DRStoreInstanceVariable . DRFrameReturn . DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 3).
+
+	block := self block: ir at: 3.
+	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+
+]
+
+{ #category : #tests }
+DRFASTPharoIRGeneratorTest >> testSuperAccess [
+	| ir block |
+	ir := self generateIRFor:
+'aSelector
+	super otherSelector'.
+
+	self assert: ir blocks size equals: 3.
+
+	block := self block: ir at: 1.
+	self assertBlockInstructions: block contains: {DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 2).
+
+	block := self block: ir at: 2.
+	self
+		assertBlockInstructions: block
+		contains: {DRMessageSend . DRFrameReturn . DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 3).
+
+	block := self block: ir at: 3.
+	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
 
 ]
