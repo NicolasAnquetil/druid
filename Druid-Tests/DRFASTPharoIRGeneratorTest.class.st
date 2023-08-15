@@ -84,6 +84,48 @@ DRFASTPharoIRGeneratorTest >> initialize [
 ]
 
 { #category : #tests }
+DRFASTPharoIRGeneratorTest >> testEmptyMethod [
+	| ir block |
+	ir := self generateIRFor:
+'aSelector'.
+
+	self assert: ir blocks size equals: 3.
+
+	block := self block: ir at: 1.
+	self assertBlockInstructions: block contains: {DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 2).
+
+	block := self block: ir at: 2.
+	self assertBlockInstructions: block contains: {DRFrameReturn. DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 3).
+
+	block := self block: ir at: 3.
+	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+
+]
+
+{ #category : #tests }
+DRFASTPharoIRGeneratorTest >> testIgnoreComments [
+	| ir block |
+	ir := self generateIRFor:
+'aSelector
+	"a comment"'.
+	self assert: ir blocks size equals: 3.
+
+	block := self block: ir at: 1.
+	self assertBlockInstructions: block contains: {DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 2).
+
+	block := self block: ir at: 2.
+	self assertBlockInstructions: block contains: {DRFrameReturn. DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 3).
+
+	block := self block: ir at: 3.
+	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+
+]
+
+{ #category : #tests }
 DRFASTPharoIRGeneratorTest >> testInstanceVarGetter [
 	| ir block |
 	self bind: 'anInstVar' to: FamixStAttribute.
