@@ -124,7 +124,7 @@ DRFASTPharoIRGeneratorTest >> testMessageSend [
 	block := self block: ir at: 2.
 	self
 		assertBlockInstructions: block
-		contains: {DRLoadInstanceVariable . DRMessageSend . DRFrameReturn . DRJump}.
+		contains: {DRLoadInstanceVariable . DRFASTMessageSend . DRFrameReturn . DRJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
@@ -173,7 +173,7 @@ DRFASTPharoIRGeneratorTest >> testSelfAccess [
 	block := self block: ir at: 2.
 	self
 		assertBlockInstructions: block
-		contains: {DRMessageSend . DRFrameReturn . DRJump}.
+		contains: {DRFASTMessageSend . DRFrameReturn . DRJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
@@ -222,7 +222,7 @@ DRFASTPharoIRGeneratorTest >> testSuperAccess [
 	block := self block: ir at: 2.
 	self
 		assertBlockInstructions: block
-		contains: {DRMessageSend . DRFrameReturn . DRJump}.
+		contains: {DRFASTMessageSend . DRFrameReturn . DRJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
