@@ -229,3 +229,28 @@ DRFASTPharoIRGeneratorTest >> testSuperAccess [
 	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
 
 ]
+
+{ #category : #tests }
+DRFASTPharoIRGeneratorTest >> testWithPharoBlock [
+	| ir block |
+	self bind: 'anInstVar' to: FamixStAttribute.
+	ir := self generateIRFor:
+'aSelector
+	anInstVar := [ :a | a asString ]'.
+
+	self assert: ir blocks size equals: 3.
+
+	block := self block: ir at: 1.
+	self assertBlockInstructions: block contains: {DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 2).
+
+	block := self block: ir at: 2.
+	self
+		assertBlockInstructions: block
+		contains: {DRStoreInstanceVariable . DRFrameReturn . DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 3).
+
+	block := self block: ir at: 3.
+	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+
+]

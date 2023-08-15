@@ -61,6 +61,11 @@ DRFASTPharoVisitor >> visitPharoAssignmentExpression: aPharoAssignmentExpression
 ]
 
 { #category : #visiting }
+DRFASTPharoVisitor >> visitPharoBlockExpression: aPharoBlockExpression [
+	^druidGenerator visitBlockNode: aPharoBlockExpression
+]
+
+{ #category : #visiting }
 DRFASTPharoVisitor >> visitPharoMessageSend: aPharoMessageSend [
 	^druidGenerator visitMessageNode: aPharoMessageSend
 ]
