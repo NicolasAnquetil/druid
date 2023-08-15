@@ -50,6 +50,21 @@ DRFASTPharoIRGenerator >> interpretAssignmentNode: aRBAssignmentNode [
 	self unexplored
 ]
 
+{ #category : #visiting }
+DRFASTPharoIRGenerator >> messageSendInstructionFor: aRBMessageNode receiver: receiver arguments: arguments method: method [
+	"Instantiating a DRFASTMessageSend instead of a DRMessageSend"
+	
+	| instruction |
+	instruction := self
+		               instantiate: DRFASTMessageSend
+		               operands: { receiver } , arguments.
+
+	instruction irGenerator: self inlineGenerator.
+	instruction typeSystem: self typeSystem.
+	instruction methodNode: (method ifNotNil: [ method ast ]).
+	^ self addInstruction: instruction from: aRBMessageNode
+]
+
 { #category : #'frame-access' }
 DRFASTPharoIRGenerator >> popOperand [
 	self topFrame operandStack
