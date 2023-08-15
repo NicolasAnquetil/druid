@@ -30,6 +30,11 @@ DRFASTPharoVisitor >> initialize [
 	specialCases := Dictionary new.
 ]
 
+{ #category : #generated }
+DRFASTPharoVisitor >> visitFASTLiteral: aFASTLiteral [
+	^druidGenerator visitLiteralValueNode: aFASTLiteral 
+]
+
 { #category : #visiting }
 DRFASTPharoVisitor >> visitFASTReturnStatement: aFASTPharoReturnStatementNode [
 

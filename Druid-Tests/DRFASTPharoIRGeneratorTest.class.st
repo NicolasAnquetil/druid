@@ -107,12 +107,132 @@ DRFASTPharoIRGeneratorTest >> testInstanceVarGetter [
 ]
 
 { #category : #tests }
+DRFASTPharoIRGeneratorTest >> testLiteralBoolean [
+	| ir block |
+	self bind: 'anInstVar' to: FamixStAttribute.
+	ir := self generateIRFor:
+'aSelector
+	anInstVar := false'.
+
+
+	self assert: ir blocks size equals: 3.
+
+	block := self block: ir at: 1.
+	self assertBlockInstructions: block contains: {DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 2).
+
+	block := self block: ir at: 2.
+	self assertBlockInstructions: block contains: {DRCopy . DRStoreInstanceVariable. DRFrameReturn. DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 3).
+
+	block := self block: ir at: 3.
+	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+
+]
+
+{ #category : #tests }
+DRFASTPharoIRGeneratorTest >> testLiteralEmptyArray [
+	| ir block |
+	self bind: 'anInstVar' to: FamixStAttribute.
+	ir := self generateIRFor:
+'aSelector
+	anInstVar := #()'.
+
+
+	self assert: ir blocks size equals: 3.
+
+	block := self block: ir at: 1.
+	self assertBlockInstructions: block contains: {DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 2).
+
+	block := self block: ir at: 2.
+	self assertBlockInstructions: block contains: {DRCopy . DRStoreInstanceVariable. DRFrameReturn. DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 3).
+
+	block := self block: ir at: 3.
+	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+
+]
+
+{ #category : #tests }
 DRFASTPharoIRGeneratorTest >> testLiteralInteger [
 	| ir block |
 	self bind: 'anInstVar' to: FamixStAttribute.
 	ir := self generateIRFor:
 'aSelector
 	anInstVar := 42'.
+
+
+	self assert: ir blocks size equals: 3.
+
+	block := self block: ir at: 1.
+	self assertBlockInstructions: block contains: {DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 2).
+
+	block := self block: ir at: 2.
+	self assertBlockInstructions: block contains: {DRCopy . DRStoreInstanceVariable. DRFrameReturn. DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 3).
+
+	block := self block: ir at: 3.
+	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+
+]
+
+{ #category : #tests }
+DRFASTPharoIRGeneratorTest >> testLiteralNil [
+	| ir block |
+	self bind: 'anInstVar' to: FamixStAttribute.
+	ir := self generateIRFor:
+'aSelector
+	anInstVar := nil'.
+
+
+	self assert: ir blocks size equals: 3.
+
+	block := self block: ir at: 1.
+	self assertBlockInstructions: block contains: {DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 2).
+
+	block := self block: ir at: 2.
+	self assertBlockInstructions: block contains: {DRCopy . DRStoreInstanceVariable. DRFrameReturn. DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 3).
+
+	block := self block: ir at: 3.
+	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+
+]
+
+{ #category : #tests }
+DRFASTPharoIRGeneratorTest >> testLiteralString [
+	| ir block |
+	self bind: 'anInstVar' to: FamixStAttribute.
+	ir := self generateIRFor:
+'aSelector
+	anInstVar := ''aString'' '.
+
+
+	self assert: ir blocks size equals: 3.
+
+	block := self block: ir at: 1.
+	self assertBlockInstructions: block contains: {DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 2).
+
+	block := self block: ir at: 2.
+	self assertBlockInstructions: block contains: {DRCopy . DRStoreInstanceVariable. DRFrameReturn. DRJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 3).
+
+	block := self block: ir at: 3.
+	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+
+]
+
+{ #category : #tests }
+DRFASTPharoIRGeneratorTest >> testLiteralSymbol [
+	| ir block |
+	self bind: 'anInstVar' to: FamixStAttribute.
+	ir := self generateIRFor:
+'aSelector
+	anInstVar := #blah'.
 
 
 	self assert: ir blocks size equals: 3.
