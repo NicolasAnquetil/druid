@@ -19,6 +19,11 @@ DRFASTPharoIRGenerator >> fastVisitor: anObject [
 	fastVisitor := anObject
 ]
 
+{ #category : #'special cases' }
+DRFASTPharoIRGenerator >> ifSpecialMessage: aRBMessageNode then: aBlock [
+	^specialCases at: aRBMessageNode selector name ifPresent: aBlock
+]
+
 { #category : #interpreting }
 DRFASTPharoIRGenerator >> interpretAssignmentNode: aRBAssignmentNode [
 

@@ -204,6 +204,11 @@ DRIRGenerator >> homeFrame [
 	^ self topFrame homeFrame
 ]
 
+{ #category : #'special cases' }
+DRIRGenerator >> ifSpecialMessage: aRBMessageNode then: aBlock [
+	^specialCases at: aRBMessageNode selector ifPresent: aBlock
+]
+
 { #category : #accessing }
 DRIRGenerator >> ignoreMessageWith: aRBMessageNode [
 
@@ -1732,7 +1737,7 @@ DRIRGenerator >> visitLiteralValueNode: aRBLiteralValueNode [
 DRIRGenerator >> visitMessageNode: aRBMessageNode [
 
 	| receiver |
-	specialCases at: aRBMessageNode selector ifPresent: [ :mapping | 
+	self ifSpecialMessage: aRBMessageNode then: [ :mapping | 
 		^ self perform: mapping withArguments: { aRBMessageNode } ].
 
 	"Resolve it as a normal send"
