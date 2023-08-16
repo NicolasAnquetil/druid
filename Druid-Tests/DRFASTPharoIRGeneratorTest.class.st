@@ -10,11 +10,6 @@ Class {
 	#category : #'Druid-Tests-FAST-Pharo'
 }
 
-{ #category : #tests }
-DRFASTPharoIRGeneratorTest >> aSelector [
-	bindings := self
-]
-
 { #category : #running }
 DRFASTPharoIRGeneratorTest >> assertBlockInstructions: aDRBlock contains: aClassCollection [
 	

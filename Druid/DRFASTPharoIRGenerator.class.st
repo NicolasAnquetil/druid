@@ -83,6 +83,28 @@ DRFASTPharoIRGenerator >> basicNewBasicBlockWithState: anExecutionState [
 	^ block
 ]
 
+{ #category : #'ir-generation' }
+DRFASTPharoIRGenerator >> blockClosureGenerator [
+
+	^ self class new
+]
+
+{ #category : #'special-cases' }
+DRFASTPharoIRGenerator >> branchFrom: startingBasicBlock onEdge: anEdgeBlock doing: aBlockToEvaluate [
+
+	| branchEntryBlock branchExitBlock |	
+	branchEntryBlock := self newBasicBlockWithState: nil during: aBlockToEvaluate.
+	
+	"Then update the successor and predecessor edges"
+	anEdgeBlock value: branchEntryBlock.
+	branchEntryBlock addPredecessor: startingBasicBlock.
+	
+	"Get the exit basic block, restore the starting basic block to simplify the caller's interaction"
+	branchExitBlock := self currentBasicBlock.
+	currentBasicBlock := startingBasicBlock.	
+	^ branchExitBlock
+]
+
 { #category : #factory }
 DRFASTPharoIRGenerator >> createInitialBasicBlock [
 
@@ -242,6 +264,32 @@ DRFASTPharoIRGenerator >> interpretAssignmentNode: aRBAssignmentNode [
 	self unexplored
 ]
 
+{ #category : #interpreting }
+DRFASTPharoIRGenerator >> interpretBlockBody: aRBBlockNode [
+
+	aRBBlockNode statements allButLastDo: [ :e |
+		e acceptVisitor: self.
+		"If this is a return, exit.
+		=> This block returns nothing"
+		self popOperand.
+		self assert: self topFrame operandStack isEmpty.
+		e isReturn ifTrue: [ 
+			self pushOperand: DRNullValue new.
+			self assert: self topFrame operandStack size = 1.
+			^ self ] ].
+	
+	"Evaluate the last statement but do not pop the operand, as it will be the block's value"
+	
+	"If the block had no statements, it has nil value"
+	aRBBlockNode statements ifEmpty: [
+		^ self pushOperand: nil asDRValue.
+	].
+
+	"Otherwise the block value is the value of its last expression"
+	aRBBlockNode statements last acceptVisitor: self.
+	self assert: self topFrame operandStack size = 1.
+]
+
 { #category : #API }
 DRFASTPharoIRGenerator >> interpretCode: aDRCode receiver: aReceiver arguments: arguments [
 
@@ -256,6 +304,48 @@ DRFASTPharoIRGenerator >> interpretCode: aDRCode receiver: aReceiver arguments: 
 
 	aDRCode executeOn: self.
 	^ self popFrame.
+]
+
+{ #category : #'special - cases' }
+DRFASTPharoIRGenerator >> interpretIfTrueWith: aRBMessageNode [
+
+	| trueBranchBasicBlockOut conditionalJump startingBasicBlock executionStateBeforeBranch |
+	aRBMessageNode receiver acceptVisitor: self.
+	conditionalJump := self
+		                   instantiateNoResultInstruction: DRBranchIfTrue
+		                   operands: { self popOperand }.
+	conditionalJump originAST: aRBMessageNode.
+
+	self currentBasicBlock endInstruction: conditionalJump.
+
+	self pushOperand: DRNullValue new.
+	executionStateBeforeBranch := executionState copy.
+
+	self popOperand.
+
+	trueBranchBasicBlockOut := self
+		                           branchFrom: self currentBasicBlock
+		                           onEdge: [ :branchEntryBlock | 
+		                           conditionalJump trueBranch: branchEntryBlock ]
+		                           doing: [ self interpretBlockBody: aRBMessageNode arguments first ].
+
+	"Merge point"
+	startingBasicBlock := self currentBasicBlock.
+	self newBasicBlock.
+	self currentBasicBlock addPredecessor: startingBasicBlock.
+	conditionalJump falseBranch: self currentBasicBlock.
+
+	"Could happen that the evaluated block had a non local return.
+	In that case, this block should not arrive to this merge point
+		=> do not add the jump"
+	trueBranchBasicBlockOut hasFinalInstruction
+		ifTrue: [ executionState := executionStateBeforeBranch ]
+		ifFalse: [
+			executionState := DRStackMerger new
+				                  builder: self;
+				                  mergeBlock: currentBasicBlock;
+				                  mergeAll: { executionStateBeforeBranch. executionState copy }.
+			trueBranchBasicBlockOut jumpTo: self currentBasicBlock ]
 ]
 
 { #category : #accessing }
@@ -304,10 +394,35 @@ DRFASTPharoIRGenerator >> newBasicBlock [
 	^ currentBasicBlock := newBasicBlock
 ]
 
+{ #category : #'basic-blocks' }
+DRFASTPharoIRGenerator >> newBasicBlockWithState: anExecutionState [
+
+	| newBasicBlock |
+	newBasicBlock := self basicNewBasicBlockWithState: anExecutionState.
+	^ currentBasicBlock := newBasicBlock
+]
+
+{ #category : #'basic-blocks' }
+DRFASTPharoIRGenerator >> newBasicBlockWithState: execState during: aFullBlockClosure [ 
+	
+	| inBasicBlock |
+	inBasicBlock := self newBasicBlockWithState: execState.
+	aFullBlockClosure value.
+	^ inBasicBlock
+]
+
 { #category : #initialization }
 DRFASTPharoIRGenerator >> newCFG [
 	
 	^ DRControlFlowGraph new
+]
+
+{ #category : #'execution state' }
+DRFASTPharoIRGenerator >> newVMState [
+	
+	^ DRVMState new
+		initializeOnBuilder: self;
+		yourself
 ]
 
 { #category : #accessing }
@@ -498,6 +613,16 @@ DRFASTPharoIRGenerator >> visitAssignmentNode: aRBAssignmentNode [
 
 	self interpretAssignmentNode: aRBAssignmentNode
 	
+]
+
+{ #category : #visiting }
+DRFASTPharoIRGenerator >> visitBlockNode: aRBBlockNode [
+
+	self pushOperand: (DRBlockClosure new
+			 blockNode: aRBBlockNode;
+			 irGenerator: self blockClosureGenerator;
+			 outerContext: self topFrame;
+			 yourself)
 ]
 
 { #category : #visiting }
