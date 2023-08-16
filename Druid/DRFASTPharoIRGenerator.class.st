@@ -177,6 +177,17 @@ DRFASTPharoIRGenerator >> initializeSpecialCases [
 
 ]
 
+{ #category : #inline }
+DRFASTPharoIRGenerator >> inlineGenerator [
+
+	| newIR |
+	newIR := DRMethodIRGeneratorInline new
+		         controlFlowGraph: controlFlowGraph;
+		         yourself.
+	newIR executionState: executionState copy.
+	^ newIR
+]
+
 { #category : #factory }
 DRFASTPharoIRGenerator >> instantiate: anInstructionClass operands: aCollection [ 
 	
@@ -429,6 +440,30 @@ DRFASTPharoIRGenerator >> resolveDeferredMethodReturns: aDRFrame [
 	aDRFrame clearDeferredMethodReturns
 ]
 
+{ #category : #visiting }
+DRFASTPharoIRGenerator >> resolveMessageSend: aRBMessageNode receiver: receiver [
+
+	| arguments |
+	arguments := aRBMessageNode arguments collect: [ :e | 
+		             e acceptVisitor: self.
+		             self popOperand ].
+
+	self
+		resolveMessageSend: aRBMessageNode
+		receiver: receiver
+		arguments: arguments
+]
+
+{ #category : #visiting }
+DRFASTPharoIRGenerator >> resolveMessageSend: aRBMessageNode receiver: receiver arguments: arguments [
+
+	^ self
+		  messageSendInstructionFor: aRBMessageNode
+		  receiver: receiver
+		  arguments: arguments
+		  method: nil "Infer methods with a Type System"
+]
+
 { #category : #'frame-access' }
 DRFASTPharoIRGenerator >> temporaryAt: aString [ 
 	
@@ -439,6 +474,12 @@ DRFASTPharoIRGenerator >> temporaryAt: aString [
 DRFASTPharoIRGenerator >> topFrame [
 
 	^ executionState topFrame
+]
+
+{ #category : #accessing }
+DRFASTPharoIRGenerator >> typeSystem [
+
+	^ DRPragmaBasedTypeSystem new
 ]
 
 { #category : #visiting }
@@ -468,6 +509,28 @@ DRFASTPharoIRGenerator >> visitInstanceVariableNode: aFASTPharoVariableNode [
 		operands: { 
 				self topFrame receiver.
 				aFASTPharoVariableNode famixVariable asDRValue }
+]
+
+{ #category : #visiting }
+DRFASTPharoIRGenerator >> visitLiteralValueNode: aRBLiteralValueNode [
+
+	self
+		addInstructionFrom: aRBLiteralValueNode
+		instructionKind: DRCopy
+		operands: { (DRConstantValue value: aRBLiteralValueNode value) }
+]
+
+{ #category : #visiting }
+DRFASTPharoIRGenerator >> visitMessageNode: aRBMessageNode [
+
+	| receiver |
+	self ifSpecialMessage: aRBMessageNode then: [ :mapping | 
+		^ self perform: mapping withArguments: { aRBMessageNode } ].
+
+	"Resolve it as a normal send"
+	aRBMessageNode receiver acceptVisitor: self.
+	receiver := self popOperand.
+	self resolveMessageSend: aRBMessageNode receiver: receiver
 ]
 
 { #category : #visiting }
