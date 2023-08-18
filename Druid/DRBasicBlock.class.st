@@ -458,7 +458,7 @@ DRBasicBlock >> initialize [
 	predecessors := OrderedCollection new.
 	isExitBlock := false.
 
-	endInstruction := DRNoop new.
+	endInstruction := FCFGNoop new.
 	endInstruction basicBlock: self.
 ]
 

@@ -13,7 +13,7 @@ Class {
 { #category : #running }
 DRFASTPharoIRGeneratorTest >> assertBlockInstructions: aDRBlock contains: aClassCollection [
 	
-	self assert: aDRBlock class equals: DRBasicBlock.
+	self assert: aDRBlock class equals: FCFGBasicBlock.
 
 	self assert: aDRBlock instructions size equals: aClassCollection size.
 	
@@ -66,7 +66,7 @@ DRFASTPharoIRGeneratorTest >> block: ir at: i [
 
 { #category : #tests }
 DRFASTPharoIRGeneratorTest >> generateIRFor: aCompiledMethod [
-	^DRFASTPharoCompilerCompiler new
+	^FCFGPharoCompilerCompiler new
 		generateDruidIRFor: (self astFor: aCompiledMethod)
 ]
 
@@ -87,15 +87,15 @@ DRFASTPharoIRGeneratorTest >> testEmptyMethod [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
-	self assertBlockInstructions: block contains: {DRFrameReturn. DRJump}.
+	self assertBlockInstructions: block contains: {FCFGFrameReturn. FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
 
@@ -109,24 +109,24 @@ DRFASTPharoIRGeneratorTest >> testIfTrue [
 	self assert: ir blocks size equals: 5.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
-	self assertBlockInstructions: block contains: {DRLoadInstanceVariable . DRBranchIfTrue }.
+	self assertBlockInstructions: block contains: {FCFGLoadInstanceVariable . FCFGBranchIfTrue }.
 	self assert: block endInstruction trueBranch equals: (self block: ir at: 4).
 	self assert: block endInstruction falseBranch equals: (self block: ir at: 5).
 
 	block := self block: ir at: 4.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 5).
 
 	block := self block: ir at: 5.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRJump}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
 
@@ -139,15 +139,15 @@ DRFASTPharoIRGeneratorTest >> testIgnoreComments [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
-	self assertBlockInstructions: block contains: {DRFrameReturn. DRJump}.
+	self assertBlockInstructions: block contains: {FCFGFrameReturn. FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
 
@@ -162,15 +162,15 @@ DRFASTPharoIRGeneratorTest >> testInstanceVarGetter [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
-	self assertBlockInstructions: block contains: {DRLoadInstanceVariable. DRFrameReturn. DRJump}.
+	self assertBlockInstructions: block contains: {FCFGLoadInstanceVariable. FCFGFrameReturn. FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: { DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: { FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
 
@@ -186,15 +186,15 @@ DRFASTPharoIRGeneratorTest >> testLiteralBoolean [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
-	self assertBlockInstructions: block contains: {DRCopy . DRStoreInstanceVariable. DRFrameReturn. DRJump}.
+	self assertBlockInstructions: block contains: {FCFGCopy . FCFGStoreInstanceVariable. FCFGFrameReturn. FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
 
@@ -210,15 +210,15 @@ DRFASTPharoIRGeneratorTest >> testLiteralEmptyArray [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
-	self assertBlockInstructions: block contains: {DRCopy . DRStoreInstanceVariable. DRFrameReturn. DRJump}.
+	self assertBlockInstructions: block contains: {FCFGCopy . FCFGStoreInstanceVariable. FCFGFrameReturn. FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
 
@@ -234,15 +234,15 @@ DRFASTPharoIRGeneratorTest >> testLiteralInteger [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
-	self assertBlockInstructions: block contains: {DRCopy . DRStoreInstanceVariable. DRFrameReturn. DRJump}.
+	self assertBlockInstructions: block contains: {FCFGCopy . FCFGStoreInstanceVariable. FCFGFrameReturn. FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
 
@@ -258,15 +258,15 @@ DRFASTPharoIRGeneratorTest >> testLiteralNil [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
-	self assertBlockInstructions: block contains: {DRCopy . DRStoreInstanceVariable. DRFrameReturn. DRJump}.
+	self assertBlockInstructions: block contains: {FCFGCopy . FCFGStoreInstanceVariable. FCFGFrameReturn. FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
 
@@ -282,15 +282,15 @@ DRFASTPharoIRGeneratorTest >> testLiteralString [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
-	self assertBlockInstructions: block contains: {DRCopy . DRStoreInstanceVariable. DRFrameReturn. DRJump}.
+	self assertBlockInstructions: block contains: {FCFGCopy . FCFGStoreInstanceVariable. FCFGFrameReturn. FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
 
@@ -306,15 +306,15 @@ DRFASTPharoIRGeneratorTest >> testLiteralSymbol [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
-	self assertBlockInstructions: block contains: {DRCopy . DRStoreInstanceVariable. DRFrameReturn. DRJump}.
+	self assertBlockInstructions: block contains: {FCFGCopy . FCFGStoreInstanceVariable. FCFGFrameReturn. FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
 
@@ -330,17 +330,17 @@ DRFASTPharoIRGeneratorTest >> testMessageSend [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
 	self
 		assertBlockInstructions: block
-		contains: {DRLoadInstanceVariable . DRFASTMessageSend . DRFrameReturn . DRJump}.
+		contains: {FCFGLoadInstanceVariable . FCFGMessageSend . FCFGFrameReturn . FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
 
@@ -357,15 +357,15 @@ DRFASTPharoIRGeneratorTest >> testParameterSetter [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: { DRLoadArgument. DRJump}.
+	self assertBlockInstructions: block contains: { FCFGLoadArgument . FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
-	self assertBlockInstructions: block contains: {DRStoreInstanceVariable. DRFrameReturn. DRJump}.
+	self assertBlockInstructions: block contains: {FCFGStoreInstanceVariable. FCFGFrameReturn. FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
 
@@ -379,17 +379,17 @@ DRFASTPharoIRGeneratorTest >> testSelfAccess [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
 	self
 		assertBlockInstructions: block
-		contains: {DRFASTMessageSend . DRFrameReturn . DRJump}.
+		contains: {FCFGMessageSend . FCFGFrameReturn . FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
 
@@ -404,17 +404,17 @@ DRFASTPharoIRGeneratorTest >> testSelfAssigned [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
 	self
 		assertBlockInstructions: block
-		contains: {DRStoreInstanceVariable . DRFrameReturn . DRJump}.
+		contains: {FCFGStoreInstanceVariable . FCFGFrameReturn . FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
 
@@ -428,17 +428,17 @@ DRFASTPharoIRGeneratorTest >> testSuperAccess [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
 	self
 		assertBlockInstructions: block
-		contains: {DRFASTMessageSend . DRFrameReturn . DRJump}.
+		contains: {FCFGMessageSend . FCFGFrameReturn . FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
 
@@ -453,16 +453,16 @@ DRFASTPharoIRGeneratorTest >> testWithPharoBlock [
 	self assert: ir blocks size equals: 3.
 
 	block := self block: ir at: 1.
-	self assertBlockInstructions: block contains: {DRJump}.
+	self assertBlockInstructions: block contains: {FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 2).
 
 	block := self block: ir at: 2.
 	self
 		assertBlockInstructions: block
-		contains: {DRStoreInstanceVariable . DRFrameReturn . DRJump}.
+		contains: {FCFGStoreInstanceVariable . FCFGFrameReturn . FCFGJump}.
 	self assert: block endInstruction target equals: (self block: ir at: 3).
 
 	block := self block: ir at: 3.
-	self assertBlockInstructions: block contains: {DRPhiFunction. DRFrameReturn. DRReturn}.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
 
 ]
