@@ -42,6 +42,12 @@ FCFGValue >> isMandatoryInstruction [
 ]
 
 { #category : #testing }
+FCFGValue >> isNoop [ 
+	
+	^ false
+]
+
+{ #category : #testing }
 FCFGValue >> isPhiFunction [
 
 	^ false

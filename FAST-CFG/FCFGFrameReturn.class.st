@@ -1,5 +1,5 @@
 Class {
 	#name : #FCFGFrameReturn,
-	#superclass : #DRFrameReturn,
+	#superclass : #FCFGCopy,
 	#category : #'FAST-CFG-model'
 }

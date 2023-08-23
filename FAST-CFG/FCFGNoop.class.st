@@ -1,5 +1,11 @@
 Class {
 	#name : #FCFGNoop,
-	#superclass : #DRNoop,
+	#superclass : #FCFGInstruction,
 	#category : #'FAST-CFG-model'
 }
+
+{ #category : #testing }
+FCFGNoop >> isNoop [ 
+	
+	^true
+]

@@ -1,6 +1,6 @@
 Class {
 	#name : #FCFGCopy,
-	#superclass : #DRCopy,
+	#superclass : #FCFGInstruction,
 	#category : #'FAST-CFG-model'
 }
 
