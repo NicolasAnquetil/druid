@@ -22,3 +22,9 @@ FCFGCopy >> opcode [
 	
 	^ ':='
 ]
+
+{ #category : #printing }
+FCFGCopy >> prettyPrint [
+	
+	^ result name, ' := ', operands first name asString
+]

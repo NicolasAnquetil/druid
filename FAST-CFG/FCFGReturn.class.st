@@ -4,6 +4,15 @@ Class {
 	#category : #'FAST-CFG-model'
 }
 
+{ #category : #inspecting }
+FCFGReturn >> inspectionSource: aBuilder [
+	<inspectorPresentationOrder: 0 title: 'Source'>
+
+	^ SpCodePresenter new
+		text: result asString;
+		yourself
+]
+
 { #category : #testing }
 FCFGReturn >> isMandatoryInstruction [
 

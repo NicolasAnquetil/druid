@@ -142,6 +142,31 @@ FCFGBasicBlock >> initialize [
 	endInstruction basicBlock: self.
 ]
 
+{ #category : #inspection }
+FCFGBasicBlock >> inspectionInstructions: aBuilder [
+	<inspectorPresentationOrder: 0 title: 'Instructions'> 
+	
+	^ aBuilder newList
+		display: [ :each | StObjectPrinter asTruncatedTextFrom: each prettyPrint ];
+		items: self instructions;
+		yourself
+]
+
+{ #category : #inspection }
+FCFGBasicBlock >> inspectionSourceCode [
+	<inspectorPresentationOrder: 30 title: 'Source code'>
+
+	| sourceInterval |
+	sourceInterval := self sourceInterval.
+	^ SpCodePresenter new 
+		beForBehavior: self methodNode methodClass;
+		text: self source;
+		addTextSegmentDecoration: (SpTextPresenterDecorator forHighlight
+			interval: (sourceInterval first to: sourceInterval last + 1);
+			yourself);
+		yourself
+]
+
 { #category : #instructions }
 FCFGBasicBlock >> instructionFactory [
 	
@@ -200,6 +225,24 @@ FCFGBasicBlock >> phiFunctions [
 { #category : #accessing }
 FCFGBasicBlock >> predecessors [
 	^ predecessors
+]
+
+{ #category : #printing }
+FCFGBasicBlock >> printOn: aStream [
+
+	aStream nextPutAll: 'DRBasicBlock('.
+	aStream print: id.
+	aStream nextPutAll: ' => '.
+	self successors size = 1
+		ifTrue: [ aStream nextPutAll: self successors anyOne id asString ]
+		ifFalse: [
+			aStream nextPutAll: '{'.
+			self successors
+				do: [ :e | aStream nextPutAll: e id asString ]
+				separatedBy: [ aStream nextPutAll: ' ,' ].
+			aStream nextPutAll: '}'.
+		].
+	aStream nextPutAll: ')'
 ]
 
 { #category : #instructions }

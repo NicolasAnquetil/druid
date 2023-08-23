@@ -239,7 +239,7 @@ DRInstruction >> inspectionDependencies: aBuilder [
 DRInstruction >> inspectionSource: aBuilder [
 	<inspectorPresentationOrder: 0 title: 'Source'>
 	
-	^ originAST inspectionSourceCode
+	^ originAST inspectionFASTSourceCode
 ]
 
 { #category : #accessing }

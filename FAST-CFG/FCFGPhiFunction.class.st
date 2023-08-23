@@ -30,6 +30,12 @@ FCFGPhiFunction >> joinedVariables: aCollection [
 	self operands: aCollection
 ]
 
+{ #category : #accessing }
+FCFGPhiFunction >> name [
+	
+	^ self result name
+]
+
 { #category : #printing }
 FCFGPhiFunction >> opcode [
 	

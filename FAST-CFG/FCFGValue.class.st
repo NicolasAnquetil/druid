@@ -30,6 +30,12 @@ FCFGValue >> isBlockClosure [
 ]
 
 { #category : #testing }
+FCFGValue >> isBranchIfCondition [ 
+
+	^ false
+]
+
+{ #category : #testing }
 FCFGValue >> isConstant [
 	
 	^ false

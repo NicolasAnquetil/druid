@@ -24,6 +24,12 @@ FCFGConstantValue >> isConstant [
 	^true
 ]
 
+{ #category : #accessing }
+FCFGConstantValue >> name [
+
+	^ value asString
+]
+
 { #category : #testing }
 FCFGConstantValue >> value [
 	^ value

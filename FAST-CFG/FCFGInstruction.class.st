@@ -63,10 +63,71 @@ FCFGInstruction >> initialize [
 	users := IdentitySet new.
 ]
 
+{ #category : #inspecting }
+FCFGInstruction >> inspectionDependencies: aBuilder [
+	<inspectorPresentationOrder: 10 title: 'Dependency Graph'>
+	
+	| view blockViews eb |
+	view := RSCanvas new.
+	blockViews := self withAllDependencies asSet collect: [ :c | | g label |
+		g := RSGroup new.
+		(label := (RSLabel new text: c label asString)
+			borderColor: Color black;
+			yourself).
+		g add: (RSBox new
+			color: Color white;
+			border: (RSBorder new color: Color purple; width: 2);
+			extent: label extent + 10;
+			yourself).
+		g add: label.
+		g asShape
+			@ RSDraggable;
+			model: c;
+			yourself ] as: Array.
+	view addAll: blockViews.
+	
+	eb := RSEdgeBuilder arrowedLine.
+	eb canvas: view.
+	eb withBorderAttachPoint.
+	eb 	shapes: blockViews.
+	eb connectToAll: #dependencies.
+	
+	"All the characters are displayed using a grid layout"
+	RSDominanceTreeLayout new
+		horizontalGap: 50;
+		doNotValidateCycles;
+		applyOn: blockViews.
+	view @ RSCanvasController.
+	
+	^ SpRoassal3InspectorPresenter new
+		canvas: view;
+		yourself
+]
+
+{ #category : #inspecting }
+FCFGInstruction >> inspectionSource: aBuilder [
+	<inspectorPresentationOrder: 0 title: 'Source'>
+	
+	^ originAST inspectionFASTSourceCode
+
+]
+
+{ #category : #testing }
+FCFGInstruction >> isBranchIfTrue [
+	
+	^ false
+]
+
 { #category : #testing }
 FCFGInstruction >> isInstruction [
 
 	^true
+]
+
+{ #category : #accessing }
+FCFGInstruction >> name [
+	
+	^ result name
 ]
 
 { #category : #printing }
@@ -121,6 +182,15 @@ FCFGInstruction >> prettyPrint [
 	
 	^ print , self opcode , ' '
 	  , (' ' join: (self operands collect: [ :e | e ifNotNil: [ e printResult ] ]))
+]
+
+{ #category : #printing }
+FCFGInstruction >> printOn: aStream [
+
+	super printOn: aStream.
+	aStream nextPut: $(.
+	aStream nextPutAll: self prettyPrint.
+	aStream nextPut: $)
 ]
 
 { #category : #removing }

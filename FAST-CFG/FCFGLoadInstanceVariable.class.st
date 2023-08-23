@@ -1,6 +1,6 @@
 Class {
 	#name : #FCFGLoadInstanceVariable,
-	#superclass : #DRLoadInstanceVariable,
+	#superclass : #FCFGInstruction,
 	#category : #'FAST-CFG-model'
 }
 
