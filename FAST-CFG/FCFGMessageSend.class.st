@@ -39,7 +39,13 @@ FCFGMessageSend >> methodNode: anObject [
 { #category : #printing }
 FCFGMessageSend >> opcode [
 
-	^ '#' , self selector , ' '
+	^ '#' , self selector name , ' '
+]
+
+{ #category : #accessing }
+FCFGMessageSend >> selector [
+
+	^ self originAST selector
 ]
 
 { #category : #accessing }

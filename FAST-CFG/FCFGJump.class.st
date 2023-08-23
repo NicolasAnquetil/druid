@@ -1,6 +1,9 @@
 Class {
 	#name : #FCFGJump,
-	#superclass : #DRJump,
+	#superclass : #FCFGInstruction,
+	#instVars : [
+		'target'
+	],
 	#category : #'FAST-CFG-model'
 }
 
@@ -20,4 +23,21 @@ FCFGJump >> isMandatoryInstruction [
 FCFGJump >> opcode [
 	
 	^ 'Jump'
+]
+
+{ #category : #accessing }
+FCFGJump >> target [
+	^ target
+]
+
+{ #category : #accessing }
+FCFGJump >> target: aBasicBlock [ 
+	
+	target := aBasicBlock
+]
+
+{ #category : #accessing }
+FCFGJump >> targets [
+	
+	^ { target }
 ]
