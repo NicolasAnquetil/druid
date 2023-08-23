@@ -5,8 +5,7 @@ Class {
 	#name : #FCFGPharoIRGeneratorTest,
 	#superclass : #TestCase,
 	#instVars : [
-		'bindings',
-		'anInstVar'
+		'bindings'
 	],
 	#category : #'Druid-Tests-FAST-Pharo'
 }
