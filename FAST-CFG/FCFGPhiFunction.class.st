@@ -29,3 +29,10 @@ FCFGPhiFunction >> isPhiFunction [
 FCFGPhiFunction >> joinedVariables: aCollection [
 	self operands: aCollection
 ]
+
+{ #category : #printing }
+FCFGPhiFunction >> opcode [
+	
+	^ 'Ø'
+	 
+]

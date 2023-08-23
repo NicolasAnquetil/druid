@@ -30,7 +30,25 @@ FCFGValue >> isBlockClosure [
 ]
 
 { #category : #testing }
+FCFGValue >> isConstant [
+	
+	^ false
+]
+
+{ #category : #testing }
+FCFGValue >> isCopy [ 
+	
+	^ false
+]
+
+{ #category : #testing }
 FCFGValue >> isInstruction [
+
+	^ false
+]
+
+{ #category : #testing }
+FCFGValue >> isJump [ 
 
 	^ false
 ]
@@ -63,6 +81,12 @@ FCFGValue >> isPhysicalRegister [
 FCFGValue >> operands [
 	
 	^ #()
+]
+
+{ #category : #printing }
+FCFGValue >> printResult [
+
+	^ self value asString
 ]
 
 { #category : #removing }

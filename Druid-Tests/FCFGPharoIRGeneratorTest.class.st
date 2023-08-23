@@ -66,6 +66,19 @@ FCFGPharoIRGeneratorTest >> block: ir at: i [
 ]
 
 { #category : #tests }
+FCFGPharoIRGeneratorTest >> exampleCFG [
+	<script: 'FCFGPharoIRGeneratorTest new exampleCFG'>
+
+	self bind: 'anInstVar' to: FamixStAttribute.
+	(self generateIRFor:
+'aSelector
+	anInstVar := false.
+	anInstVar ifTrue: [^5 factorial].
+	anInstVar := ''aString''')
+		inspect
+]
+
+{ #category : #tests }
 FCFGPharoIRGeneratorTest >> generateIRFor: aCompiledMethod [
 	^FCFGPharoCompilerCompiler new
 		generateDruidIRFor: (self astFor: aCompiledMethod)

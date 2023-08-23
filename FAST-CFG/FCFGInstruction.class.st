@@ -69,6 +69,12 @@ FCFGInstruction >> isInstruction [
 	^true
 ]
 
+{ #category : #printing }
+FCFGInstruction >> opcode [
+	
+	^ self subclassResponsibility
+]
+
 { #category : #accessing }
 FCFGInstruction >> operands [
 
@@ -105,6 +111,16 @@ FCFGInstruction >> originAST [
 FCFGInstruction >> originAST: anObject [
 
 	originAST := anObject
+]
+
+{ #category : #printing }
+FCFGInstruction >> prettyPrint [
+
+	| print |
+	print := result ifNil: [ '' ] ifNotNil: [ result name , ' := ' ].
+	
+	^ print , self opcode , ' '
+	  , (' ' join: (self operands collect: [ :e | e ifNotNil: [ e printResult ] ]))
 ]
 
 { #category : #removing }

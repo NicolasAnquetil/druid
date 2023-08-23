@@ -9,3 +9,9 @@ FCFGNoop >> isNoop [
 	
 	^true
 ]
+
+{ #category : #printing }
+FCFGNoop >> opcode [
+	
+	^ 'Noop'
+]

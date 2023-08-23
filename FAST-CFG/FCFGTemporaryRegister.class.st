@@ -31,3 +31,9 @@ FCFGTemporaryRegister >> id: anObject [
 
 	id := anObject
 ]
+
+{ #category : #accessing }
+FCFGTemporaryRegister >> name [
+
+	^ 'R' , self id asString
+]

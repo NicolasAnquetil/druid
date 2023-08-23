@@ -5,7 +5,19 @@ Class {
 }
 
 { #category : #testing }
+FCFGJump >> isJump [ 
+
+	^ true
+]
+
+{ #category : #testing }
 FCFGJump >> isMandatoryInstruction [
 	
 	^ true
+]
+
+{ #category : #printing }
+FCFGJump >> opcode [
+	
+	^ 'Jump'
 ]

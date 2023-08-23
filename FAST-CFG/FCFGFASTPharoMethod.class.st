@@ -61,6 +61,12 @@ FCFGFASTPharoMethod >> methodNode: anObject [
 	methodNode := anObject
 ]
 
+{ #category : #printing }
+FCFGFASTPharoMethod >> opcode [
+	
+	^ methodNode selector 
+]
+
 { #category : #accessing }
 FCFGFASTPharoMethod >> temporaryNames [
 	^self codeNode localVariables collect: #name

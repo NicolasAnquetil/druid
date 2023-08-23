@@ -9,3 +9,9 @@ FCFGReturn >> isMandatoryInstruction [
 
 	^ true
 ]
+
+{ #category : #printing }
+FCFGReturn >> opcode [
+	
+	^ 'Return'
+]

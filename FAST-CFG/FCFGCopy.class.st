@@ -5,8 +5,20 @@ Class {
 }
 
 { #category : #testing }
+FCFGCopy >> isCopy [ 
+
+	^true 
+]
+
+{ #category : #testing }
 FCFGCopy >> isMandatoryInstruction [ 
 
 	self result isPhysicalRegister ifTrue: [ ^ true ].
 	^ false
+]
+
+{ #category : #printing }
+FCFGCopy >> opcode [
+	
+	^ ':='
 ]
