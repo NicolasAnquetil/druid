@@ -10,6 +10,19 @@ FCFGPharoCompilerCompiler >> argName: index forMethod: method [
 	^ (method parameters at: index) name
 ]
 
+{ #category : #'generation-IR' }
+FCFGPharoCompilerCompiler >> configureIRBuilder: generator forMethod: method [
+
+	| startBlock initialBasicBlock |
+	"Create the initial basic block"
+	startBlock := generator initialBasicBlock.
+	initialBasicBlock := generator createInitialBasicBlock.
+	startBlock jumpTo: initialBasicBlock.
+
+	generator receiver: (FCFGInterpreterValue value: interpreter).
+	generator numberOfArguments: (self numberOfArgumentsForMethod: method)
+]
+
 { #category : #accessing }
 FCFGPharoCompilerCompiler >> drNode: method [
 	^FCFGFASTPharoMethod methodNode: (self methodAST: method)
@@ -23,7 +36,7 @@ FCFGPharoCompilerCompiler >> generateDruidIRFor: method [
 	self configureIRBuilder: irGenerator forMethod: method.
 
 	arguments := (1 to: (self numberOfArgumentsForMethod: method)) collect: [ :_ | irGenerator pop ].
-	receiver := DRInterpreterValue value: interpreter.
+	receiver := FCFGInterpreterValue value: interpreter.
 
 	irGenerator
 		interpretCode: (self drNode: method)

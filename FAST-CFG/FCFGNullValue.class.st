@@ -1,5 +1,5 @@
 Class {
 	#name : #FCFGNullValue,
-	#superclass : #DRNullValue,
+	#superclass : #FCFGValue,
 	#category : #'FAST-CFG-model'
 }

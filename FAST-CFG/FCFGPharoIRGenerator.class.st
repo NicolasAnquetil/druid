@@ -178,7 +178,7 @@ FCFGPharoIRGenerator >> initialize [
 	
 	currentBasicBlock := self initialBasicBlock.
 	executionState := DRExecutionState new
-		vmState: (DRVMState new
+		vmState: (FCFGVMState new
 			operandStack: Stack new;
 			yourself);
 		executionStack: initialExecutionState;
@@ -420,7 +420,7 @@ FCFGPharoIRGenerator >> newCFG [
 { #category : #'execution state' }
 FCFGPharoIRGenerator >> newVMState [
 	
-	^ DRVMState new
+	^ FCFGVMState new
 		initializeOnBuilder: self;
 		yourself
 ]

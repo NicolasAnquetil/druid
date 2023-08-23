@@ -7,6 +7,12 @@ Class {
 	#category : #'FAST-CFG-model'
 }
 
+{ #category : #testing }
+FCFGMessageSend >> isMandatoryInstruction [
+
+	^ true
+]
+
 { #category : #printing }
 FCFGMessageSend >> opcode [
 

@@ -3,3 +3,9 @@ Class {
 	#superclass : #DRJump,
 	#category : #'FAST-CFG-model'
 }
+
+{ #category : #testing }
+FCFGJump >> isMandatoryInstruction [
+	
+	^ true
+]
