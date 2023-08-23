@@ -3,3 +3,9 @@ Class {
 	#superclass : #FCFGValue,
 	#category : #'FAST-CFG-model'
 }
+
+{ #category : #testing }
+FCFGNullValue >> isNullValue [
+
+	^true
+]

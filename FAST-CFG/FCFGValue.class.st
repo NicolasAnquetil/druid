@@ -66,6 +66,12 @@ FCFGValue >> isNoop [
 ]
 
 { #category : #testing }
+FCFGValue >> isNullValue [
+
+	^ false
+]
+
+{ #category : #testing }
 FCFGValue >> isPhiFunction [
 
 	^ false
