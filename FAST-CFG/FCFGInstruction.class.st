@@ -131,6 +131,19 @@ FCFGInstruction >> removeFromCFG [
 	self users asSet do: [ :e | e replaceDependency: self by: DRNullValue new  ]
 ]
 
+{ #category : #accessing }
+FCFGInstruction >> removeOperandAt: anInteger [ 
+
+	| removed |
+	operands := operands asOrderedCollection.
+	removed := operands removeAt: anInteger.
+	
+	"It could happen a same instruction has the same operand twice.
+	Then only remove the user relationship if its not in the operands list after removal"
+	(operands includes: removed)
+		ifFalse: [ removed removeUser: self ]
+]
+
 { #category : #removing }
 FCFGInstruction >> removeUser: anInstruction [
 

@@ -53,6 +53,12 @@ FCFGBasicBlock >> basicEndInstructionRemovingUsers: aDRInstruction [
 	^ self basicEndInstruction: aDRInstruction
 ]
 
+{ #category : #removing }
+FCFGBasicBlock >> basicRemovePredecessor: aDRBasicBlock [ 
+	
+	predecessors remove: aDRBasicBlock
+]
+
 { #category : #accessing }
 FCFGBasicBlock >> collectionOf: aDRInstruction [
 
@@ -205,6 +211,23 @@ FCFGBasicBlock >> removeInstruction: aDRInstruction [
 	aDRInstruction isPhiFunction
 		ifTrue: [ phiFunctions remove: aDRInstruction ]
 		ifFalse: [ instructions remove: aDRInstruction ]
+]
+
+{ #category : #removing }
+FCFGBasicBlock >> removePredecessor: aDRBasicBlock [ 
+	
+	| index |
+	index := predecessors indexOf: aDRBasicBlock.
+	self removePredecessorAt: index
+]
+
+{ #category : #removing }
+FCFGBasicBlock >> removePredecessorAt: index [ 
+	
+	self instructionsDo: [ :e |
+		e isPhiFunction ifTrue: [ 
+			e removeOperandAt: index ] ].
+	self basicRemovePredecessor: (predecessors at: index)
 ]
 
 { #category : #'test - methods' }

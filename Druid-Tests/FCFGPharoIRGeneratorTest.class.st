@@ -145,6 +145,37 @@ FCFGPharoIRGeneratorTest >> testIfTrue [
 ]
 
 { #category : #tests }
+FCFGPharoIRGeneratorTest >> testIfTrueWithReturn [
+	| ir block |
+	self bind: 'anInstVar' to: FamixStAttribute.
+	ir := self generateIRFor:
+'aSelector
+	anInstVar ifTrue: [^5]'.
+	self assert: ir blocks size equals: 5.
+
+	block := self block: ir at: 1.
+	self assertBlockInstructions: block contains: {FCFGJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 2).
+
+	block := self block: ir at: 2.
+	self assertBlockInstructions: block contains: {FCFGLoadInstanceVariable . FCFGBranchIfTrue }.
+	self assert: block endInstruction trueBranch equals: (self block: ir at: 4).
+	self assert: block endInstruction falseBranch equals: (self block: ir at: 5).
+
+	block := self block: ir at: 4.
+	self assertBlockInstructions: block contains: {FCFGCopy . FCFGFrameReturn . FCFGJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 3).
+
+	block := self block: ir at: 5.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGJump}.
+	self assert: block endInstruction target equals: (self block: ir at: 3).
+
+	block := self block: ir at: 3.
+	self assertBlockInstructions: block contains: {FCFGPhiFunction. FCFGFrameReturn. FCFGReturn}.
+
+]
+
+{ #category : #tests }
 FCFGPharoIRGeneratorTest >> testIgnoreComments [
 	| ir block |
 	ir := self generateIRFor:
